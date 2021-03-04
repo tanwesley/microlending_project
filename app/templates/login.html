@@ -8,7 +8,7 @@
 
   <title>Login</title>
 
-  <link rel="stylesheet" type="text/css" href="loginPage.css">
+  <link rel="stylesheet" type="text/css" href="{{ url_for('static',filename='styles/form.css') }}">
 
 </head>
 
@@ -17,7 +17,6 @@
     <div class="formContainer">
         <form action="" method="post">
             <label class="titleLabel">login</label>
-            <br>
 
             <input class="inputTextbox" type="text" placeholder="username" name="username"/>
             <br>
@@ -28,7 +27,12 @@
             <button class="submitButton" type="submit">LOGIN</button>
             <br>
 
-            <span class="switchPages">no account? <a href="signupPage.html">sign up</a> </span>
+            {% if error %}
+            <br>
+            <span style="color: red;">{{error}}</span>
+            {% endif %}
+
+            <span class="switchPages">no account? <a href="signup">sign up</a> </span>
         </form>
     </div>
 

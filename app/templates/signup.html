@@ -8,7 +8,7 @@
 
   <title>Sign Up</title>
 
-  <link rel="stylesheet" type="text/css" href="loginPage.css">
+  <link rel="stylesheet" type="text/css" href="{{ url_for('static',filename='styles/form.css') }}">
 
 </head>
 
@@ -17,14 +17,10 @@
     <div class="formContainer">
         <form action="" method="post">
             <label class="titleLabel">sign up</label>
-            <br>
 
-            <input class="inputTextbox" style="width: 33%" type="text" placeholder="first name" name="firstname"/>
+            <input class="inputTextbox" style="width: 33.5%" type="text" placeholder="first name" name="firstname"/>
 
-            <input class="inputTextbox" style="width: 33%" type="text" placeholder="last name" name="lastname"/>
-            <br>
-
-            <input class="inputTextbox" type="text" placeholder="email" name="email">
+            <input class="inputTextbox" style="width: 33.5%" type="text" placeholder="last name" name="lastname"/>
             <br>
 
             <input class="inputTextbox" type="text" placeholder="username" name="username"/>
@@ -36,7 +32,12 @@
             <button class="submitButton" type="submit">SIGN UP</button>
             <br>
 
-            <span class="switchPages">already registered? <a href="loginPage.html">login</a> </span>
+            {% if error %}
+            <br>
+            <span style="color: red;">{{error}}</span>
+            {% endif %}
+
+            <span class="switchPages">already registered? <a href="login">login</a> </span>
         </form>
     </div>
 

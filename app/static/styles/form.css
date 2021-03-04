@@ -19,6 +19,11 @@
     padding-bottom: 40px;
 }
 
+.error {
+    background-color: red;
+    color: white;
+}
+
 .inputTextbox {
 	outline: none;
     width: 70%;
