@@ -59,12 +59,6 @@ def login():
                 session["username"] = user_query.username
 
                 # TODO: add if statement to determine whether or not the user is a bank manager
-                user = User()
-                user.firstname = "test"
-                user.lastname = "name"
-                user.username = "user"
-                user.password = "pass"
-
                 return redirect(url_for(".index"))
             else:
                 error = "Username/password is incorrect. Please try again."
@@ -122,9 +116,9 @@ def signup():
             error = "This username has already been taken! Please try again."
         else:
             session["logged_in"] = True
-            session["first_name"] = found_user.firstname
-            session["last_name"] = found_user.lastname
-            session["username"] = found_user.username
+            session["first_name"] = user.firstname
+            session["last_name"] = user.lastname
+            session["username"] = user.username
             db.session.add(user)
             db.session.commit()
             return redirect(url_for(".index"))
@@ -136,16 +130,14 @@ def signup():
 # Retrieves and renders poolBrowser.html when a GET method is performed
 @main.route("/poolBrowser", methods=["GET", "POST"])
 def poolBrowser():
-    chosenCategory = "" # <-- This will be blank unless the user has chosen from categories drop down
-    categories = []# <-- get all categories from the "category" field in the Pool table
-    pools = Pool.query.all() # <-- get all pools as objects from the Pool table
+    chosenCategory = "select a category"
+    categories = [item[0] for item in Pool.query.with_entities(Pool.category)]
+    pools = Pool.query.all()
 
     if request.method == "POST":
-        chosenCategory = request.form.get("categories")
+        chosenCategory = request.form.get("categoryList")
         for p in pools:
             if p.category != chosenCategory:
-                categories.remove(p)
+                pools.remove(p)
 
-    # categories = ["Big Money", "Balla Walla", "Cheese n Crackers", "Potato Pototo", "Stonkenburg"]
-    # pools = [Pool("Big Stonks", "Large Contributions", 2453.55), Pool("Little Stonks", "Low Interest", 352.43)]
     return render_template("poolBrowser.html", chosenCategory=chosenCategory, categories=categories, pools=pools)

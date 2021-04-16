@@ -4,12 +4,12 @@
 }
 
 .title {
-    font-size: 72px;
+    font-size: 60px;
     display: block;
     padding-bottom: 20px;
 }
 
-.categories {
+.categoryList {
     font-size: 18px;
     background-color: #E1E1E1;
     height: 50px;

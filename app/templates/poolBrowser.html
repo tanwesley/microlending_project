@@ -18,8 +18,8 @@
 
         <!-- Pass in a list of all categories found in the Pool table of the database -->
         <form action="{{ url_for('main.poolBrowser') }}" method="post">
-            <select name="categories" class="categories">
-                <option disabled selected value> {{category}} </option>
+            <select name="categoryList" class="categoryList">
+                <option disabled selected value> {{ chosenCategory }} </option>
                 {% for category in categories %}
                 <option value="{{ category }}">{{ category }}</option>
                 {% endfor %}
