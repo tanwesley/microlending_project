@@ -1,0 +1,97 @@
+.root {
+    font-family: Verdana;
+    background-image: linear-gradient(to right, #2855FF, #7C97FF);
+}
+
+.title {
+    font-size: 72px;
+    display: block;
+    padding-bottom: 20px;
+}
+
+.categories {
+    font-size: 18px;
+    background-color: #E1E1E1;
+    height: 50px;
+    border: none;
+    outline: none;
+    padding-left: 10px;
+}
+
+option {
+    border: 1px solid gray;
+}
+option:nth-child(even) {
+    background-color:white;
+}
+
+button {
+    font-size: large;
+    height: 50px;
+    border: none;
+    outline: none;
+    background-image: linear-gradient(to right, #2855FF, #7C97FF);
+}
+button:hover {
+    background-image: linear-gradient(to right, #3B64FF, #8BA3FF);
+}
+button:active {
+    background-image: linear-gradient(to right, #2855FF, #7C97FF);
+}
+
+.submitButton {
+    font-size: 18px;
+    width: 50px;
+}
+
+.poolContainer {
+    width: 50%;
+    background-color: #F9F9F9;
+    margin: 20px auto auto auto;
+    padding: 10px 10px 10px 10px;
+    box-shadow: 3px 3px 3px #3E3E3E;
+    border-radius: 10px;
+}
+
+.poolName {
+    font-size: 48px;
+    padding-left: 10px;
+}
+
+.poolCategory {
+    font-size: 24px;
+    padding-right: 10px;
+    float: right;
+}
+
+.poolAmount {
+    color: green;
+    font-size: 72px;
+    margin: auto;
+    display: table;
+}
+
+.poolTextbox {
+    outline: none;
+    height: 50px;
+    background-color: #E1E1E1;
+    border: none;
+    margin-bottom: 10px;
+    padding-left: 10px;
+    font-size: 18px;
+}
+
+.poolButton {
+    width: 100px;
+}
+
+form {
+    display: inline-block;
+}
+.contribute {
+    padding-left: 10px;
+}
+.request {
+    padding-right: 10px;
+    float: right;
+}

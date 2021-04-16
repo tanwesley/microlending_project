@@ -2,7 +2,9 @@ from flask import Blueprint, request, render_template, url_for, redirect, sessio
 from functools import wraps
 from database import db
 from models import User
+from models import Pool
 
+#
 main = Blueprint('main', __name__)
 
 
@@ -29,6 +31,10 @@ def index():
 # Checks to see if the user's credentials are valid if POST method is performed
 @main.route("/login", methods=["GET", "POST"])
 def login():
+    # If the user is already logged in, redirect them to main.html
+    if "logged_in" in session:
+        return redirect(url_for(".index"))
+
     # If an error occurs, this will be set to a string with an error message
     error = None
 
@@ -46,8 +52,19 @@ def login():
         if user_query:
             # Check if the password in the database matches the password that was entered
             if password == user_query.password:
+                # Grant the user the required session variables
                 session["logged_in"] = True
-                flash("Login Successful: \n" + user_query.firstname + "\n" + user_query.lastname + "\n" + user_query.username)
+                session["first_name"] = user_query.firstname
+                session["last_name"] = user_query.lastname
+                session["username"] = user_query.username
+
+                # TODO: add if statement to determine whether or not the user is a bank manager
+                user = User()
+                user.firstname = "test"
+                user.lastname = "name"
+                user.username = "user"
+                user.password = "pass"
+
                 return redirect(url_for(".index"))
             else:
                 error = "Username/password is incorrect. Please try again."
@@ -62,8 +79,12 @@ def login():
 @main.route("/logout")
 @login_required
 def logout():
+    # Pop all session variables that are given to logged in users
     session.pop("logged_in", None)
-    return redirect(url_for(".main"))
+    session.pop("first_name", None)
+    session.pop("last_name", None)
+    session.pop("username", None)
+    return redirect(url_for(".index"))
 
 
 # Retrieves and renders signup.html when a GET method is performed
@@ -101,9 +122,30 @@ def signup():
             error = "This username has already been taken! Please try again."
         else:
             session["logged_in"] = True
+            session["first_name"] = found_user.firstname
+            session["last_name"] = found_user.lastname
+            session["username"] = found_user.username
             db.session.add(user)
             db.session.commit()
             return redirect(url_for(".index"))
 
     # If the user simply accesses the page or refreshes, serve the signup.html page
     return render_template("signup.html", error=error)
+
+
+# Retrieves and renders poolBrowser.html when a GET method is performed
+@main.route("/poolBrowser", methods=["GET", "POST"])
+def poolBrowser():
+    chosenCategory = "" # <-- This will be blank unless the user has chosen from categories drop down
+    categories = []# <-- get all categories from the "category" field in the Pool table
+    pools = Pool.query.all() # <-- get all pools as objects from the Pool table
+
+    if request.method == "POST":
+        chosenCategory = request.form.get("categories")
+        for p in pools:
+            if p.category != chosenCategory:
+                categories.remove(p)
+
+    # categories = ["Big Money", "Balla Walla", "Cheese n Crackers", "Potato Pototo", "Stonkenburg"]
+    # pools = [Pool("Big Stonks", "Large Contributions", 2453.55), Pool("Little Stonks", "Low Interest", 352.43)]
+    return render_template("poolBrowser.html", chosenCategory=chosenCategory, categories=categories, pools=pools)

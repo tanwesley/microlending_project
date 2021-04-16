@@ -1,4 +1,4 @@
-from flask import Flask
+from flask import Flask, session
 from routes import main
 from database import db
 
@@ -11,9 +11,9 @@ def create_app():
     app.register_blueprint(main)
 
     # Configuration settings
-    app.config["SECRET_KEY"] = "microlend2021"
+    app.config["SECRET_KEY"] = "microlend2021" # ?
     app.config["SQLALCHEMY_DATABASE_URI"] = "sqlite:///db.sqlite3"  # Sets the name and location of the sqlite3 database
-    app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False  # Turns off this annoying warning message
+    app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False  # Turns off unnecessary warning message
 
     # Initializes the database and associates it with the Flask app
     db.init_app(app)
@@ -26,3 +26,4 @@ def create_app():
 if __name__ == "__main__":
     app = create_app()
     app.run()
+    session["logged_in"] = False

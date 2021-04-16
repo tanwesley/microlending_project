@@ -1,10 +1,55 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <title>$Title$</title>
+
+    <meta charset="UTF-8">
+
+    <title>Pool Browser</title>
+
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles/poolStyle.css') }}">
+
 </head>
-<body>
-$END$
+
+<body class="root">
+
+    <div class="poolContainer" style="text-align: center">
+        <span class="title">pool browser</span>
+        <br>
+
+        <!-- Pass in a list of all categories found in the Pool table of the database -->
+        <form action="{{ url_for('main.poolBrowser') }}" method="post">
+            <select name="categories" class="categories">
+                <option disabled selected value> {{category}} </option>
+                {% for category in categories %}
+                <option value="{{ category }}">{{ category }}</option>
+                {% endfor %}
+            </select>
+            <button class="submitButton" type="submit">go</button>
+        </form>
+    </div>
+
+    <!-- Pass in a list of all pools found in the Pool table of the database -->
+    {% for pool in pools %}
+    <div class="poolContainer">
+        <span class="poolName">{{ pool.name }}</span>
+        <span class="poolCategory">{{ pool.category }}</span>
+        <br>
+
+        <span class="poolAmount">${{ pool.amount }}</span>
+        <br>
+
+        <form action="/contributeToPool" method="post" class="contribution">
+            <input class="poolTextbox" type="text" placeholder="contribute" name="contribute"/>
+            <button class="poolButton" type="submit">contribute</button>
+        </form>
+
+        <form action="/requestFromPool" method="post" class="request">
+            <input class="poolTextbox" type="text" placeholder="request" name="request"/>
+            <button class="poolButton" type="submit">request</button>
+        </form>
+    </div>
+    {% endfor %}
+
 </body>
+
 </html>
