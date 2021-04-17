@@ -20,6 +20,7 @@
         <form action="{{ url_for('main.poolBrowser') }}" method="post">
             <select name="categoryList" class="categoryList">
                 <option disabled selected value> {{ chosenCategory }} </option>
+                <option value = "All">All</option>
                 {% for category in categories %}
                 <option value="{{ category }}">{{ category }}</option>
                 {% endfor %}

@@ -1,4 +1,4 @@
-#!C:\Users\mcder\Documents\Codebase\microlending-project\venv\Scripts\python.exe
+#!C:\Users\mcder\PycharmProjects\microlending-project\venv\Scripts\python.exe
 # EASY-INSTALL-ENTRY-SCRIPT: 'alembic==1.5.4','console_scripts','alembic'
 import re
 import sys

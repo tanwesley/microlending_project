@@ -37,7 +37,7 @@ deactivate () {
 # unset irrelevant variables
 deactivate nondestructive
 
-VIRTUAL_ENV="C:\Users\mcder\Documents\Codebase\microlending-project\venv"
+VIRTUAL_ENV="C:\Users\mcder\PycharmProjects\microlending-project\venv"
 export VIRTUAL_ENV
 
 _OLD_VIRTUAL_PATH="$PATH"

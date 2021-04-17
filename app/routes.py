@@ -3,6 +3,7 @@ from functools import wraps
 from database import db
 from models import User
 from models import Pool
+from models import BankAccount
 
 #
 main = Blueprint('main', __name__)
@@ -130,14 +131,34 @@ def signup():
 # Retrieves and renders poolBrowser.html when a GET method is performed
 @main.route("/poolBrowser", methods=["GET", "POST"])
 def poolBrowser():
-    chosenCategory = "select a category"
-    categories = [item[0] for item in Pool.query.with_entities(Pool.category)]
+    # Set to "All" by default so that pools of all categories show up unless specifically requested by user
+    chosenCategory = "All"
+
+    # Query the pool table for a list of all categories found in the category field
+    categoryQuery = [item[0] for item in Pool.query.with_entities(Pool.category)]
+    # Remove duplicates from the list
+    categories = []
+    for c in categoryQuery:
+        if c not in categories:
+            categories.append(c)
+
+    # Query the pool table for a list of all pools
     pools = Pool.query.all()
 
+    # POST occurs when the user clicks the "go" button to switch categories
     if request.method == "POST":
+        # Set the chosenCategory variable to whatever the user chose from the drop down list
         chosenCategory = request.form.get("categoryList")
-        for p in pools:
-            if p.category != chosenCategory:
-                pools.remove(p)
+
+        # If the user selected "All", simply launch the webpage without filtering pools
+        if chosenCategory == "All":
+            return render_template("poolBrowser.html", chosenCategory=chosenCategory, categories=categories, pools=pools)
+
+        # Loop through the list of pools and only keep pools which match the chosen category
+        temp = []
+        for pool in pools:
+            if pool.category == chosenCategory:
+                temp.append(pool)
+        pools = temp
 
     return render_template("poolBrowser.html", chosenCategory=chosenCategory, categories=categories, pools=pools)
