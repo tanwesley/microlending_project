@@ -1,18 +1,21 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
 
+<head>
     <meta charset="UTF-8">
 
     <title>Pool Browser</title>
 
     <link rel="stylesheet" href="{{ url_for('static', filename='styles/poolStyle.css') }}">
-
 </head>
 
 <body class="root">
+    {% with bankManager=bankManager %}
+        {% include 'header.html' %}
+    {% endwith %}
 
     <div class="poolContainer" style="text-align: center">
+
         <span class="title">pool browser</span>
         <br>
 
@@ -22,7 +25,7 @@
                 <option disabled selected value> {{ chosenCategory }} </option>
                 <option value = "All">All</option>
                 {% for category in categories %}
-                <option value="{{ category }}">{{ category }}</option>
+                    <option value="{{ category }}">{{ category }}</option>
                 {% endfor %}
             </select>
             <button class="submitButton" type="submit">go</button>
@@ -50,7 +53,6 @@
         </form>
     </div>
     {% endfor %}
-
 </body>
 
 </html>

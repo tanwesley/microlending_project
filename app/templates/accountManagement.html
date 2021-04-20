@@ -1,0 +1,18 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+
+    <title>Account Management</title>
+
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles/accountManagementStyle.css') }}">
+</head>
+
+<body>
+    {% with bankManager=bankManager %}
+        {% include 'header.html' %}
+    {% endwith %}
+</body>
+
+</html>

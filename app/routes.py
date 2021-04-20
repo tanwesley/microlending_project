@@ -32,7 +32,7 @@ def index():
 # Checks to see if the user's credentials are valid if POST method is performed
 @main.route("/login", methods=["GET", "POST"])
 def login():
-    # If the user is already logged in, redirect them to main.html
+    # If the user is already logged in, redirect them to dashboard.html
     if "logged_in" in session:
         return redirect(url_for(".index"))
 
@@ -128,8 +128,16 @@ def signup():
     return render_template("signup.html", error=error)
 
 
+#
+@main.route("/dashboard", methods=["GET", "POST"])
+@login_required
+def dashboard():
+    return render_template("dashboard.html")
+
+
 # Retrieves and renders poolBrowser.html when a GET method is performed
 @main.route("/poolBrowser", methods=["GET", "POST"])
+@login_required
 def poolBrowser():
     # Set to "All" by default so that pools of all categories show up unless specifically requested by user
     chosenCategory = "All"
@@ -162,3 +170,17 @@ def poolBrowser():
         pools = temp
 
     return render_template("poolBrowser.html", chosenCategory=chosenCategory, categories=categories, pools=pools)
+
+
+#
+@main.route("/accountManagement", methods=["GET", "POST"])
+@login_required
+def accountManagement():
+    return render_template("accountManagement.html")
+
+
+#
+@main.route("/bankManagement", methods=["GET", "POST"])
+@login_required
+def bankManagement():
+    return render_template("bankManagement.html")

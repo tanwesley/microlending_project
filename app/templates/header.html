@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+
+    <title>Pool Browser</title>
+
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles/headerStyle.css') }}">
+</head>
+
+<body>
+        <table>
+            <td><a href="{{ url_for('main.dashboard') }}">Dashboard</a></td>
+            <td><a href="{{ url_for('main.poolBrowser') }}">Pool Browser</a></td>
+            <td><a href="{{ url_for('main.accountManagement') }}">Account Management</a></td>
+
+            <!-- If the bankManager variable is set to True, then this part of the HTML will be displayed -->
+            {% if bankManager %}
+                <td><a href="{{ url_for('main.bankManagement') }}">Bank Management</a></td>
+            {% endif %}
+
+            <td><a href="{{ url_for('main.logout') }}" style="color: Red;">Logout</a></td>
+        </table>
+</body>
+
+</html>

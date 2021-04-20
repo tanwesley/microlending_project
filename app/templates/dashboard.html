@@ -1,0 +1,23 @@
+<!doctype html>
+
+<html lang="en">
+
+<head>
+
+  <meta charset="utf-8">
+
+  <title>Microlending</title>
+
+  <link rel="stylesheet" type="text/css" href="{{ url_for('static',filename='styles/loginSignUpStyle.css') }}">
+
+</head>
+
+<body class="root">
+  {% with bankManager=bankManager %}
+    {% include 'header.html' %}
+  {% endwith %}
+
+  <header>Microlending</header>
+</body>
+
+</html>

@@ -69,6 +69,7 @@ button:active {
     font-size: 72px;
     margin: auto;
     display: table;
+    padding: 50px 0px 50px 0px;
 }
 
 .poolTextbox {
