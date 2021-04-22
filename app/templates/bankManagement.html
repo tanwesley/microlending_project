@@ -6,15 +6,37 @@
 
     <title>Bank Management</title>
 
-    <link rel="stylesheet" href="{{ url_for('static', filename='styles/bankManagementStyle.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles/accountManagementStyle.css') }}">
 </head>
 
 <body>
     {% with isBankManager=isBankManager %}
-    {% with exclude=exclude %}
         {% include 'header.html' %}
     {% endwith %}
-    {% endwith %}
+
+    <!-- Create new pools -->
+    <div class="container">
+        <h3>Create New Loan Pool</h3>
+
+        <form action="/createNewPool" method="post">
+            <input class="textbox" type="text" placeholder="pool name" name="pool name"/><br>
+            <input class="textbox" type="text" placeholder="pool category" name="pool category"/><br>
+            <input class="textbox" type="text" placeholder="starting amount" name="starting amount"/><br>
+
+            <button class="userInfoButton" type="submit">submit</button>
+        </form>
+    </div>
+
+    <!-- Approve/deny loan requests -->
+    <div class="container">
+        <h3>Review Loan Requests</h3>
+
+        {% for loanRequest in loanRequests %}
+            <form action="/approveOrDenyLoanRequest" method="post">
+
+            </form>
+        {% endfor %}
+    </div>
 </body>
 
 </html>

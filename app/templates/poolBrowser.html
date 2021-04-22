@@ -11,9 +11,7 @@
 
 <body class="root">
     {% with isBankManager=isBankManager %}
-    {% with exclude=exclude %}
         {% include 'header.html' %}
-    {% endwith %}
     {% endwith %}
 
     <div class="poolContainer" style="text-align: center">
@@ -25,18 +23,24 @@
         <form action="{{ url_for('main.poolBrowser') }}" method="post">
             <select name="categoryList" class="categoryList">
                 <option disabled selected value> {{ chosenCategory }} </option>
-                <option value = "All">All</option>
+                <option value="All">All</option>
                 {% for category in categories %}
                     <option value="{{ category }}">{{ category }}</option>
                 {% endfor %}
             </select>
             <button class="submitButton" type="submit">go</button>
         </form>
+        <br><br>
+
+        {% for message in get_flashed_messages() %}
+            <span style="color:red;">{{ message }}</span>
+        {% endfor %}
     </div>
 
     <!-- Pass in a list of all pools found in the Pool table of the database -->
     {% for pool in pools %}
     <div class="poolContainer">
+
         <span class="poolName">{{ pool.name }}</span>
         <span class="poolCategory">{{ pool.category }}</span>
         <br>
@@ -45,11 +49,13 @@
         <br>
 
         <form action="/contributeToPool" method="post" class="contribution">
+            <input type="hidden" name="poolId" value={{pool.id}}>
             <input class="poolTextbox" type="text" placeholder="contribute" name="contribute"/>
             <button class="poolButton" type="submit">contribute</button>
         </form>
 
         <form action="/requestFromPool" method="post" class="request">
+            <input type="hidden" name="poolId" value={{pool.id}}>
             <input class="poolTextbox" type="text" placeholder="request" name="request"/>
             <button class="poolButton" type="submit">request</button>
         </form>

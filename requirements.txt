@@ -25,3 +25,4 @@ pip~=21.0.1
 cryptography~=3.4.6
 py~=1.10.0
 setuptools~=53.0.0
+bcrypt~=3.2.0

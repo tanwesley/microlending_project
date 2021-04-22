@@ -11,23 +11,15 @@
 
 <body class="root">
         <table>
-            {% if exclude != 'dashboard' %}
-                <td><a href="{{ url_for('main.dashboard') }}">Dashboard</a></td>
-            {% endif %}
+            <td><a href="{{ url_for('main.dashboard') }}">Dashboard</a></td>
 
-            {% if exclude != 'poolBrowser' %}
-                <td><a href="{{ url_for('main.poolBrowser') }}">Pool Browser</a></td>
-            {% endif %}
+            <td><a href="{{ url_for('main.poolBrowser') }}">Pool Browser</a></td>
 
-            {% if exclude != 'accountManagement' %}
-                <td><a href="{{ url_for('main.accountManagement') }}">Account Management</a></td>
-            {% endif %}
+            <td><a href="{{ url_for('main.accountManagement') }}">Account Management</a></td>
 
             <!-- If the bankManager variable is set to True, then this part of the HTML will be displayed -->
             {% if isBankManager %}
-                {% if exclude != 'bankManagement' %}
-                    <td><a href="{{ url_for('main.bankManagement') }}">Bank Management</a></td>
-                {% endif %}
+                <td><a href="{{ url_for('main.bankManagement') }}">Bank Management</a></td>
             {% endif %}
 
             <td><a href="{{ url_for('main.logout') }}" style="color: Red;">Logout</a></td>

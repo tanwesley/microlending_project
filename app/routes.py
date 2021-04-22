@@ -1,8 +1,9 @@
 from flask import Blueprint, request, render_template, url_for, redirect, session, flash
 from functools import wraps
 from database import db
-from models import User
+from models import User, PoolContribution, LoanRequest
 from models import Pool
+from models import BankAccount
 import bcrypt
 
 #
@@ -16,8 +17,23 @@ def login_required(f):
         if "logged_in" in session:
             return f(*args, **kwargs)
         else:
-            flash("You need to login first.")
             return redirect(url_for(".login"))
+
+    return wrap
+
+
+# Creates a decorator which indicates that the page accessed requires the user to be a bank manager
+def bank_manager_required(f):
+    @wraps(f)
+    def wrap(*args, **kwargs):
+        if "user_id" in session:
+            user = User.query.filter_by(id=session["user_id"]).first()
+            if user.isBankManager:
+                return f(*args, **kwargs)
+            else:
+                return redirect(url_for(".index"))
+        else:
+            return redirect(url_for(".index"))
 
     return wrap
 
@@ -61,6 +77,7 @@ def login():
                 # Grant the user the required session variables
                 session["logged_in"] = True
                 session["user_id"] = user.id
+                session["active_bank_account_id"] = user.bank_accounts[0].id
 
                 return redirect(url_for(".index"))
             else:
@@ -71,20 +88,22 @@ def login():
     return render_template("login.html", error=error)
 
 
-# Removes the "logged_in" session variable from the user, making it so they cannot
-# access pages which require it (ie use the @login_required decorator)
+# Removes session variables from the user:
+# - "logged_in" which would allow the user to access pages which require the user to be logged in
+# - "user_id" which allowed the user's information to be accessed from the database from anywhere
 @main.route("/logout")
 @login_required
 def logout():
-    # Pop all session variables that are given to logged in users
     session.pop("logged_in", None)
     session.pop("user_id", None)
+    session.pop("active_bank_account_id", None)
     return redirect(url_for(".index"))
 
 
-# Retrieves and renders signup.html when a GET method is performed
-# Checks for required information in the text boxes, gathers the info, and creates a database
-# entry for the user's new account
+# Retrieves and renders signup.html when the user navigates to /signup
+# - Processes information from the form if filled out correctly. This information is used to create a user account
+#   in the database. Once that is done, the user is given the "logged_in" and "user_id" session variables
+# - If the form is not filled out correctly or the username is already taken, an error message is displayed for the user
 @main.route("/signup", methods=["GET", "POST"])
 def signup():
     # If the username entered by the user is already in use, this variable will change to an error
@@ -128,6 +147,15 @@ def signup():
             session["logged_in"] = True
             session["user_id"] = user.id
 
+            # Create a default bank account for the user
+            defaultAccount = BankAccount("Checking", 0, user.id)
+            db.session.add(defaultAccount)
+            db.session.commit()
+
+            # Retrieve the bank account from the user model so it can be assigned to a session var
+            session["active_bank_account_id"] = user.bank_accounts[0].id
+
+            # Redirect to the dashboard
             return redirect(url_for(".dashboard"))
 
     # If the user simply accesses the page or refreshes, serve the signup.html page
@@ -141,7 +169,7 @@ def dashboard():
     # Get current user from database
     user = User.query.filter_by(id=session["user_id"]).first()
 
-    return render_template("dashboard.html", exclude="dashboard", isBankManager=user.isBankManager)
+    return render_template("dashboard.html", isBankManager=user.isBankManager)
 
 
 # Retrieves and renders poolBrowser.html when a GET method is performed
@@ -173,7 +201,7 @@ def poolBrowser():
         # If the user selected "All", simply launch the webpage without filtering pools
         if chosenCategory == "All":
             return render_template("poolBrowser.html", chosenCategory=chosenCategory, categories=categories,
-                                   pools=pools, exclude="poolBrowser", isBankManager=user.isBankManager)
+                                   pools=pools, isBankManager=user.isBankManager)
 
         # Loop through the list of pools and only keep pools which match the chosen category
         temp = []
@@ -183,7 +211,69 @@ def poolBrowser():
         pools = temp
 
     return render_template("poolBrowser.html", chosenCategory=chosenCategory, categories=categories,
-                           pools=pools, exclude="poolBrowser", isBankManager=user.isBankManager)
+                           pools=pools, isBankManager=user.isBankManager)
+
+
+@main.route("/contributeToPool", methods=["POST"])
+@login_required
+def contributeToPool():
+    # Get the pool being used from the template
+    poolId = request.form.get("poolId")
+    pool = Pool.query.filter_by(id=poolId).first()
+
+    # Get the user from session variable
+    user = User.query.filter_by(id=session["user_id"]).first()
+
+    # Get the active bank account using the session variable
+    bankAccount = BankAccount.query.filter_by(id=session["active_bank_account_id"]).first()
+
+    # Get the amount from the textbox
+    amountContributed = float(request.form.get("contribute"))
+
+    # If the amount contributed is greater than the amount the user has in their bank account, give error message
+    if amountContributed > bankAccount.micro_dollars:
+        flash("You do not have enough in your account to make that contribution!")
+        return redirect(url_for(".poolBrowser"))
+
+    # Add the amount to the pool amount
+    # Subtract the amount from the user's bank account
+    # Create a new pool contribution
+    pool.amount = pool.amount + amountContributed
+    bankAccount.micro_dollars = bankAccount.micro_dollars - amountContributed
+    poolContribution = PoolContribution(amountContributed, user.id, pool.id)
+    db.session.add(poolContribution)
+    db.session.commit()
+
+    return redirect(url_for(".poolBrowser"))
+
+
+@main.route("/requestFromPool", methods=["POST"])
+@login_required
+def requestFromPool():
+    # Get the pool being used from the template
+    poolId = request.form.get("poolId")
+    pool = Pool.query.filter_by(id=poolId).first()
+
+    # Get the user from session variable
+    user = User.query.filter_by(id=session["user_id"]).first()
+
+    # Get the active bank account using the session variable
+    bankAccount = BankAccount.query.filter_by(id=session["active_bank_account_id"]).first()
+
+    # Get the amount from the textbox
+    amountRequested = float(request.form.get("request"))
+
+    # If the amount requested is greater than the amount in the pool, give error message
+    if amountRequested > pool.amount:
+        flash("The pool does not have enough in it for this request!")
+        return redirect(url_for(".poolBrowser"))
+
+    # Create a loan request in the database
+    loanRequest = LoanRequest(amountRequested, user.id, bankAccount.id, pool.id)
+    db.session.add(loanRequest)
+    db.session.commit()
+
+    return redirect(url_for(".poolBrowser"))
 
 
 #
@@ -192,15 +282,18 @@ def poolBrowser():
 def accountManagement():
     # Get current user from database
     user = User.query.filter_by(id=session["user_id"]).first()
+    bankAccount = BankAccount.query.filter_by(id=session["active_bank_account_id"]).first()
 
-    return render_template("accountManagement.html", exclude="accountManagement", isBankManager=user.isBankManager)
+    return render_template("accountManagement.html", user=user, bankAccount=bankAccount,
+                           isBankManager=user.isBankManager)
 
 
 #
 @main.route("/bankManagement", methods=["GET", "POST"])
 @login_required
+@bank_manager_required
 def bankManagement():
     # Get current user from database
     user = User.query.filter_by(id=session["user_id"]).first()
 
-    return render_template("bankManagement.html", exclude="bankManagement", isBankManager=user.isBankManager)
+    return render_template("bankManagement.html", isBankManager=user.isBankManager)
