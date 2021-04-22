@@ -10,8 +10,10 @@
 </head>
 
 <body class="root">
-    {% with bankManager=bankManager %}
+    {% with isBankManager=isBankManager %}
+    {% with exclude=exclude %}
         {% include 'header.html' %}
+    {% endwith %}
     {% endwith %}
 
     <div class="poolContainer" style="text-align: center">

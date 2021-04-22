@@ -10,8 +10,10 @@
 </head>
 
 <body>
-    {% with bankManager=bankManager %}
+    {% with isBankManager=isBankManager %}
+    {% with exclude=exclude %}
         {% include 'header.html' %}
+    {% endwith %}
     {% endwith %}
 </body>
 
