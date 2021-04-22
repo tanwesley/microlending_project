@@ -19,6 +19,8 @@ class User(db.Model):
     lastname = db.Column(db.String(100))
     username = db.Column(db.String(100), unique=True)  # Usernames must be unique
     password = db.Column(db.String(100))
+    isBankManager = db.Column(db.Integer)
+
     # Defines a one-to-many relationship with the models specified in relationship()
     # - The relationship() method returns an array of all rows that contain a foreign key from this model
     #   from the specified table
@@ -27,19 +29,20 @@ class User(db.Model):
     loans = relationship("Loan")
     loan_requests = relationship("LoanRequest")
 
-    # Standard constructor, default parameters are used for one-to-many relationship variables since it is possible that
-    # users can have no bank accounts, pool contributions, loans, or loan requests
-    def __init__(self, firstname, lastname, username, password, bank_accounts=[], pool_contributions=[], loans=[], loan_requests=[]):
+    # Standard constructor for the model
+    # - isBankManager is set to default -- the only way a user can be made a bank manager is by editing the
+    #                                    database directly via a database editor
+    # - Variables which refer to one to many relationships are set as empty lists by default
+    def __init__(self, firstname, lastname, username, password, isBankManager=0, bank_accounts=[], pool_contributions=[], loans=[], loan_requests=[]):
         self.firstname = firstname
         self.lastname = lastname
         self.username = username
         self.password = password
+        self.isBankManager = isBankManager
         self.bank_accounts = bank_accounts
         self.pool_contributions = pool_contributions
         self.loans = loans
         self.loan_requests = loan_requests
-
-    # TODO: add encryption and decryption functions for the password
 
 
 # BankAccount Model - relates to "bank_account" table in database

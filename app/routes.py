@@ -3,7 +3,7 @@ from functools import wraps
 from database import db
 from models import User
 from models import Pool
-from models import BankAccount
+import bcrypt
 
 #
 main = Blueprint('main', __name__)
@@ -45,24 +45,26 @@ def login():
         username = request.form["username"]
         password = request.form["password"]
 
+        # If either of the text boxes were left empty, give the user an error message
+        if username == "" or password == "":
+            error = "Please fill out the required fields"
+            return render_template("login.html", error=error)
+
         # Find the user in the database based on the username they entered
-        user_query = User.query.filter_by(username=username).first()
+        user = User.query.filter_by(username=username).first()
 
         # If the user is found in the database set a session variable indicating they are logged in
         # then redirect them to the proper page
-        if user_query:
+        if user:
             # Check if the password in the database matches the password that was entered
-            if password == user_query.password:
+            if bcrypt.checkpw(password.encode("utf-8"), user.password):
                 # Grant the user the required session variables
                 session["logged_in"] = True
-                session["first_name"] = user_query.firstname
-                session["last_name"] = user_query.lastname
-                session["username"] = user_query.username
+                session["user_id"] = user.id
 
-                # TODO: add if statement to determine whether or not the user is a bank manager
                 return redirect(url_for(".index"))
             else:
-                error = "Username/password is incorrect. Please try again."
+                error = "Username/password is incorrect. Please try again"
         else:
             error = "Username/password is incorrect. Please try again."
 
@@ -76,9 +78,7 @@ def login():
 def logout():
     # Pop all session variables that are given to logged in users
     session.pop("logged_in", None)
-    session.pop("first_name", None)
-    session.pop("last_name", None)
-    session.pop("username", None)
+    session.pop("user_id", None)
     return redirect(url_for(".index"))
 
 
@@ -105,6 +105,9 @@ def signup():
             error = "Please fill out each text box to continue."
             return render_template("signup.html", error=error)
 
+        # Encrypt the password provided by the user before creating the database model
+        password = bcrypt.hashpw(password.encode("utf-8"), bcrypt.gensalt())
+
         # Make a User model with the information provided by the user
         user = User(firstname, lastname, username, password)
 
@@ -112,17 +115,20 @@ def signup():
         found_user = User.query.filter_by(username=username).first()
 
         # If the username already exists, notify the user via dynamic HTML
-        # Otherwise the user will be added to the database and redirected to the main page
+        # Otherwise the user will be added to the database and redirected
         if found_user:
             error = "This username has already been taken! Please try again."
         else:
-            session["logged_in"] = True
-            session["first_name"] = user.firstname
-            session["last_name"] = user.lastname
-            session["username"] = user.username
+            # Add the user to the database
             db.session.add(user)
             db.session.commit()
-            return redirect(url_for(".index"))
+
+            # Retrieve the user from the database so that the user's ID can be accessed and assigned to a session var
+            user = User.query.filter_by(username=username).first()
+            session["logged_in"] = True
+            session["user_id"] = user.id
+
+            return redirect(url_for(".dashboard"))
 
     # If the user simply accesses the page or refreshes, serve the signup.html page
     return render_template("signup.html", error=error)
@@ -132,13 +138,19 @@ def signup():
 @main.route("/dashboard", methods=["GET", "POST"])
 @login_required
 def dashboard():
-    return render_template("dashboard.html")
+    # Get current user from database
+    user = User.query.filter_by(id=session["user_id"]).first()
+
+    return render_template("dashboard.html", exclude="dashboard", isBankManager=user.isBankManager)
 
 
 # Retrieves and renders poolBrowser.html when a GET method is performed
 @main.route("/poolBrowser", methods=["GET", "POST"])
 @login_required
 def poolBrowser():
+    # Get current user from database
+    user = User.query.filter_by(id=session["user_id"]).first()
+
     # Set to "All" by default so that pools of all categories show up unless specifically requested by user
     chosenCategory = "All"
 
@@ -160,7 +172,8 @@ def poolBrowser():
 
         # If the user selected "All", simply launch the webpage without filtering pools
         if chosenCategory == "All":
-            return render_template("poolBrowser.html", chosenCategory=chosenCategory, categories=categories, pools=pools)
+            return render_template("poolBrowser.html", chosenCategory=chosenCategory, categories=categories,
+                                   pools=pools, exclude="poolBrowser", isBankManager=user.isBankManager)
 
         # Loop through the list of pools and only keep pools which match the chosen category
         temp = []
@@ -169,18 +182,25 @@ def poolBrowser():
                 temp.append(pool)
         pools = temp
 
-    return render_template("poolBrowser.html", chosenCategory=chosenCategory, categories=categories, pools=pools)
+    return render_template("poolBrowser.html", chosenCategory=chosenCategory, categories=categories,
+                           pools=pools, exclude="poolBrowser", isBankManager=user.isBankManager)
 
 
 #
 @main.route("/accountManagement", methods=["GET", "POST"])
 @login_required
 def accountManagement():
-    return render_template("accountManagement.html")
+    # Get current user from database
+    user = User.query.filter_by(id=session["user_id"]).first()
+
+    return render_template("accountManagement.html", exclude="accountManagement", isBankManager=user.isBankManager)
 
 
 #
 @main.route("/bankManagement", methods=["GET", "POST"])
 @login_required
 def bankManagement():
-    return render_template("bankManagement.html")
+    # Get current user from database
+    user = User.query.filter_by(id=session["user_id"]).first()
+
+    return render_template("bankManagement.html", exclude="bankManagement", isBankManager=user.isBankManager)

@@ -1,6 +1,9 @@
 from flask import Flask, session
+import bcrypt
+
 from routes import main
 from database import db
+
 
 
 def create_app():
@@ -17,7 +20,6 @@ def create_app():
 
     # Initializes the database and associates it with the Flask app
     db.init_app(app)
-
     with app.app_context():
         db.create_all()
 
