@@ -7,10 +7,6 @@ div {
     border-radius: 10px;
 }
 
-.root {
-    font-family: Verdana;
-    background-image: linear-gradient(to right, #2855FF, #7C97FF);
-}
 
 .header {
     padding: 30px;

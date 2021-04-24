@@ -172,7 +172,7 @@ def dashboard():
     # Get current user from database
     user = User.query.filter_by(id=session["user_id"]).first()
 
-    return render_template("dashboard.html", isBankManager=user.isBankManager)
+    return render_template("dashboard.html", isBankManager=user.isBankManager,user=user)
 
 
 # Retrieves and renders poolBrowser.html when a GET method is performed
@@ -214,7 +214,7 @@ def poolBrowser():
         pools = temp
 
     return render_template("poolBrowser.html", chosenCategory=chosenCategory, categories=categories,
-                           pools=pools, isBankManager=user.isBankManager)
+                           pools=pools, isBankManager=user.isBankManager,user=user)
 
 
 @main.route("/contributeToPool", methods=["POST"])

@@ -6,13 +6,16 @@
 
   <title>Microlending</title>
 
-  <link rel="stylesheet" type="text/css" href="{{ url_for('static',filename='styles/poolStyle.css') }}">
+ <!-- <link rel="stylesheet" type="text/css" href="{{ url_for('static',filename='styles/poolStyle.css') }}"> -->
 </head>
 
 <body class="root">
   {% with isBankManager=isBankManager %}
         {% include 'header.html' %}
     {% endwith %}
+
+    <p>Welcome, {{user.firstname}}</p>
+
 </body>
 
 </html>
