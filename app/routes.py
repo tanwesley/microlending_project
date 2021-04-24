@@ -41,7 +41,10 @@ def bank_manager_required(f):
 # Retrieves and renders index.html whenever the server is accessed without a specific page defined
 @main.route("/")
 def index():
-    return render_template("index.html")
+    if "logged_in" in session:
+        return redirect(url_for(".dashboard"))
+    else:
+        return render_template("index.html")
 
 
 # Retrieves and renders login.html whenever user accesses /login if GET method is performed
@@ -50,7 +53,7 @@ def index():
 def login():
     # If the user is already logged in, redirect them to dashboard.html
     if "logged_in" in session:
-        return redirect(url_for(".index"))
+        return redirect(url_for(".dashboard"))
 
     # If an error occurs, this will be set to a string with an error message
     error = None

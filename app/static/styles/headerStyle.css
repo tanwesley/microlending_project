@@ -12,6 +12,14 @@ div {
     background-image: linear-gradient(to right, #2855FF, #7C97FF);
 }
 
+.header {
+    padding: 30px;
+    text-align: center;
+    background: #0b1e53;
+    color: rgb(255, 255, 255);
+    font-size: 30px;
+}
+
 a {
     line-height: 50px;
     font-size: 16px;
