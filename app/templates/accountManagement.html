@@ -19,7 +19,7 @@
         <h3>Choose Active Bank Account</h3>
 
         <form action="/switchBankAccounts" method="post">
-            <select name="accountDropDown" class="dropDown">
+            <select name="accountDropDown" class="categoryList">
                 <option disabled selected value>{{ bankAccount.account_name }} - ${{ bankAccount.micro_dollars }}</option>
                 {% for account in user.bank_accounts %}
                     <option value="{{ account.id }}">{{ account.account_name }} - ${{ account.micro_dollars }}</option>
@@ -35,7 +35,7 @@
         <h3>Add Funds to Your Account - [{{ bankAccount.account_name }} - ${{bankAccount.micro_dollars}}]</h3>
 
         <form action="/addFundsToActiveBankAccount" method="post">
-            <input class="textbox" type="text" placeholder="add funds" name="add funds"/>
+            <input style="width:50%;" class="poolTextbox" type="text" placeholder="add funds" name="add funds"/>
             <button class="button" type="submit">submit</button>
         </form>
     </div>
@@ -47,7 +47,7 @@
         <form action="/changeUserInformation" method="post">
             <span>1) Choose which piece of info you would like to change</span>
             <br><br>
-            <select name="infoDropDown" class="dropDown">
+            <select style="width:250px;" name="infoDropDown" class="categoryList">
                 <option value="first name">First name</option>
                 <option value="last name">Last name</option>
                 <option value="username">Username</option>
@@ -57,12 +57,12 @@
 
             <span>2) Enter what you would like to change it to</span>
             <br><br>
-            <input class="textbox" type="text" name="newInformation"/>
+            <input style="width:50%;" class="poolTextbox" type="text" name="newInformation"/>
             <br>
 
             <span>3) Enter your password and submit</span>
             <br><br>
-            <input class="textbox" type="password" name="password"/>
+            <input style="width:50%;" class="poolTextbox" type="password" name="password"/>
 
             <button class="userInfoButton" type="submit">submit</button>
 
@@ -72,5 +72,5 @@
         </form>
     </div>
 </body>
-<footer, style="position: absolute; bottom: 0px;">Website by Ryan McDermott, Wesley Tan, Alex Uctum, Kevin Skulski</footer>
+<footer style="position: absolute; bottom: 0px;">Website by Ryan McDermott, Wesley Tan, Alex Uctum, Kevin Skulski</footer>
 </html>
