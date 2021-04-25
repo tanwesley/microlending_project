@@ -6,10 +6,10 @@
 
     <title>Account Management</title>
 
-    <link rel="stylesheet" href="{{ url_for('static', filename='styles/accountManagementStyle.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles/poolStyle.css') }}">
 </head>
 
-<body>
+<body class="root">
     {% with isBankManager=isBankManager %}
         {% include 'header.html' %}
     {% endwith %}
