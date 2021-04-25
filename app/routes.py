@@ -289,6 +289,41 @@ def accountManagement():
 
 
 #
+@main.route("/changeUserInformation", methods=["GET", "POST"])
+@login_required
+def changeUserInformation():
+    # Get user information from database
+    user = User.query.filter_by(id=session["user_id"]).first()
+
+    # Get information from the form
+    infoToChange = request.form.get("infoDropDown")
+    changeTo = request.form.get("newInformation")
+    password = request.form.get("password")
+
+    # Make sure all text boxes are actually properly filled out
+    if changeTo == "" or password == "":
+        flash("You must fill out all text boxes in the form!")
+        return redirect(url_for(".accountManagement"))
+
+    # Check if password matches password found in database, then change the requested item
+    if bcrypt.checkpw(password.encode("utf-8"), user.password):
+        if infoToChange == "first name":
+            user.firstname = changeTo
+        elif infoToChange == "last name":
+            user.lastname = changeTo
+        elif infoToChange == "username":
+            user.username = changeTo
+        elif infoToChange == "password":
+            user.password = changeTo
+
+    # Save the change to the database
+    db.session.commit()
+
+    flash("Your changes have been saved successfully!")
+    return redirect(url_for(".accountManagement"))
+
+
+#
 @main.route("/bankManagement", methods=["GET", "POST"])
 @login_required
 @bank_manager_required

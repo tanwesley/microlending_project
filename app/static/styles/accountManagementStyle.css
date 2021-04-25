@@ -18,12 +18,8 @@
     font-size: 18px;
 }
 
-button {
-    font-size: large;
-    height: 50px;
-    border: none;
-    outline: none;
-    background-image: linear-gradient(to right, #2855FF, #7C97FF);
+.test {
+    background-color: red;
 }
 
 h3 {
