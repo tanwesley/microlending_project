@@ -292,6 +292,17 @@ def accountManagement():
 
 
 #
+@main.route("/switchBankAccounts", methods=["GET", "POST"])
+@login_required
+def switchBankAccounts():
+    # Get the id number from the drop down list value
+    newId = request.form.get("accountDropDown")
+    session["active_bank_account_id"] = newId
+
+    return redirect(url_for(".accountManagement"))
+
+
+#
 @main.route("/changeUserInformation", methods=["GET", "POST"])
 @login_required
 def changeUserInformation():
@@ -305,7 +316,7 @@ def changeUserInformation():
 
     # Make sure all text boxes are actually properly filled out
     if changeTo == "" or password == "":
-        flash("You must fill out all text boxes in the form!")
+        # TODO: add error message
         return redirect(url_for(".accountManagement"))
 
     # Check if password matches password found in database, then change the requested item
@@ -321,8 +332,26 @@ def changeUserInformation():
 
     # Save the change to the database
     db.session.commit()
+    # TODO: add message to let user know change was successful
+    return redirect(url_for(".accountManagement"))
 
-    flash("Your changes have been saved successfully!")
+
+@main.route("/addFundsToActiveBankAccount", methods=["GET", "POST"])
+@login_required
+def addFundsToActiveBankAccount():
+    # Get active bank account
+    bankAccount = BankAccount.query.filter_by(id=session["active_bank_account_id"]).first()
+
+    # Get the amount to add from the form
+    amountToAdd = request.form.get("add funds")
+
+    # Add money to the bank account amount
+    bankAccount.micro_dollars += float(amountToAdd)
+
+    # Update database
+    db.session.commit()
+
+    # Save the changes to the database
     return redirect(url_for(".accountManagement"))
 
 

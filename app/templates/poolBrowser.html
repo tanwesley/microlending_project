@@ -45,7 +45,7 @@
         <span class="poolCategory">{{ pool.category }}</span>
         <br>
 
-        <span class="poolAmount">${{ pool.amount }}</span>
+        <span class="poolAmount">${{ "%.2f" | format(pool.amount) }}</span>
         <br>
 
         <form action="/contributeToPool" method="post" class="contribution">
