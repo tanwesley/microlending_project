@@ -5,9 +5,15 @@ from models import User, PoolContribution, LoanRequest
 from models import Pool
 from models import BankAccount
 import bcrypt
+import re
 
-#
 main = Blueprint('main', __name__)
+
+'''
+==================================
+|           DECORATORS           |
+==================================
+'''
 
 
 # Creates a decorator which indicates that the page accessed requires a login
@@ -38,6 +44,13 @@ def bank_manager_required(f):
     return wrap
 
 
+'''
+==================================
+|           HOME PAGE            |
+==================================
+'''
+
+
 # Retrieves and renders index.html whenever the server is accessed without a specific page defined
 @main.route("/")
 def index():
@@ -45,6 +58,13 @@ def index():
         return redirect(url_for(".dashboard"))
     else:
         return render_template("index.html")
+
+
+'''
+===========================================
+|           LOGIN/LOGOUT/SIGNUP           |
+===========================================
+'''
 
 
 # Retrieves and renders login.html whenever user accesses /login if GET method is performed
@@ -165,6 +185,13 @@ def signup():
     return render_template("signup.html", error=error)
 
 
+'''
+=================================
+|           DASHBOARD           |
+=================================
+'''
+
+
 #
 @main.route("/dashboard", methods=["GET", "POST"])
 @login_required
@@ -172,10 +199,17 @@ def dashboard():
     # Get current user from database
     user = User.query.filter_by(id=session["user_id"]).first()
 
-    return render_template("dashboard.html", isBankManager=user.isBankManager,user=user)
+    return render_template("dashboard.html", user=user)
 
 
-# Retrieves and renders poolBrowser.html when a GET method is performed
+'''
+====================================
+|           POOL BROWSER           |
+====================================
+'''
+
+
+# Retrieves information needed to properly render poolBrowser.html from the database and displays it
 @main.route("/poolBrowser", methods=["GET", "POST"])
 @login_required
 def poolBrowser():
@@ -204,7 +238,7 @@ def poolBrowser():
         # If the user selected "All", simply launch the webpage without filtering pools
         if chosenCategory == "All":
             return render_template("poolBrowser.html", chosenCategory=chosenCategory, categories=categories,
-                                   pools=pools, isBankManager=user.isBankManager)
+                                   pools=pools, user=user)
 
         # Loop through the list of pools and only keep pools which match the chosen category
         temp = []
@@ -214,9 +248,12 @@ def poolBrowser():
         pools = temp
 
     return render_template("poolBrowser.html", chosenCategory=chosenCategory, categories=categories,
-                           pools=pools, isBankManager=user.isBankManager,user=user)
+                           pools=pools, user=user)
 
 
+# Form function for the poolBrowser page
+# - Transfers money from the user's bank account to the pool they chose to contribute to based on what they entered
+#   in the "contribute" text box
 @main.route("/contributeToPool", methods=["POST"])
 @login_required
 def contributeToPool():
@@ -230,12 +267,18 @@ def contributeToPool():
     # Get the active bank account using the session variable
     bankAccount = BankAccount.query.filter_by(id=session["active_bank_account_id"]).first()
 
+    # Validate that the user actually entered a number
+    amountContributed = request.form.get("contribute")
+    if not re.match(r'^[1-9]\d*(\.\d{1,2})?$', amountContributed):
+        flash("Please enter a valid number to make a request")
+        return redirect(url_for(".poolBrowser"))
+
     # Get the amount from the textbox
-    amountContributed = float(request.form.get("contribute"))
+    amountContributed = float(amountContributed)
 
     # If the amount contributed is greater than the amount the user has in their bank account, give error message
     if amountContributed > bankAccount.micro_dollars:
-        flash("You do not have enough in your account to make that contribution!")
+        flash("You do not have enough funds in your account to make this contribution")
         return redirect(url_for(".poolBrowser"))
 
     # Add the amount to the pool amount
@@ -250,6 +293,8 @@ def contributeToPool():
     return redirect(url_for(".poolBrowser"))
 
 
+# Form function for the poolBrowser page
+# - Creates a new loan request in the database using the amount entered by the user in the "request" text box
 @main.route("/requestFromPool", methods=["POST"])
 @login_required
 def requestFromPool():
@@ -263,12 +308,18 @@ def requestFromPool():
     # Get the active bank account using the session variable
     bankAccount = BankAccount.query.filter_by(id=session["active_bank_account_id"]).first()
 
+    # validate that the user actually entered a number
+    amountRequested = request.form.get("request")
+    if not re.match(r'^[1-9]\d*(\.\d{1,2})?$', amountRequested):
+        flash("Please enter a valid number to make a request")
+        return redirect(url_for(".poolBrowser"))
+
     # Get the amount from the textbox
-    amountRequested = float(request.form.get("request"))
+    amountRequested = float(amountRequested)
 
     # If the amount requested is greater than the amount in the pool, give error message
     if amountRequested > pool.amount:
-        flash("The pool does not have enough in it for this request!")
+        flash("You cannot request an amount that is greater than what the pool contains")
         return redirect(url_for(".poolBrowser"))
 
     # Create a loan request in the database
@@ -279,7 +330,14 @@ def requestFromPool():
     return redirect(url_for(".poolBrowser"))
 
 
-#
+'''
+==========================================
+|           ACCOUNT MANAGEMENT           |
+==========================================
+'''
+
+
+# Routes the user to the account management page which accepts multiple parameters required for the info found on it
 @main.route("/accountManagement", methods=["GET", "POST"])
 @login_required
 def accountManagement():
@@ -287,22 +345,66 @@ def accountManagement():
     user = User.query.filter_by(id=session["user_id"]).first()
     bankAccount = BankAccount.query.filter_by(id=session["active_bank_account_id"]).first()
 
-    return render_template("accountManagement.html", user=user, bankAccount=bankAccount,
-                           isBankManager=user.isBankManager)
+    return render_template("accountManagement.html", user=user, bankAccount=bankAccount)
 
 
-#
+# Form function for the accountManagement page
+# Switches the user's active bank account depending on what they choose from the bank account drop down list
 @main.route("/switchBankAccounts", methods=["GET", "POST"])
 @login_required
 def switchBankAccounts():
-    # Get the id number from the drop down list value
-    newId = request.form.get("accountDropDown")
-    session["active_bank_account_id"] = newId
+    # Get the value from the account drop down list. The value contains the ID for each of the user's
+    # bank accounts in the database
+    session["active_bank_account_id"] = request.form.get("accountDropDown")
+    return redirect(url_for(".accountManagement"))
+
+
+# Form function for the accountManagement page
+# Adds micro-dollars to the user's bank account based on what they enter into the "add funds" textbox
+@main.route("/addFundsToActiveBankAccount", methods=["GET", "POST"])
+@login_required
+def addFundsToActiveBankAccount():
+    # Get the user's current active bank account using the session variable
+    bankAccount = BankAccount.query.filter_by(id=session["active_bank_account_id"]).first()
+
+    # Get the amount the user put into the form and validate that it is actually a number
+    amountToAdd = request.form.get("add funds")
+    if not re.match(r'^[1-9]\d*(\.\d{1,2})?$', amountToAdd):
+        flash("Please enter a valid number to make a request", "addFundsError")
+        return redirect(url_for(".accountManagement"))
+
+    # Add the amount to the user's bank account balance and update the database
+    bankAccount.micro_dollars += float(amountToAdd)
+    db.session.commit()
 
     return redirect(url_for(".accountManagement"))
 
 
-#
+# Form function for the accountManagement page
+# Creates a new bank account under the user's account
+@main.route("/createNewBankAccount", methods=["POST"])
+@login_required
+def createNewBankAccount():
+    # Get account name from the form
+    accountName = request.form.get("account name")
+
+    # Give the user an error message if the textbox is empty
+    if accountName == "":
+        flash("Please fill out all of the text boxes", "createBankAccountMissingFieldError")
+        return redirect(url_for(".accountManagement"))
+
+    # Create new bank account object and commit it to the database
+    bankAccount = BankAccount(accountName, 0, session["user_id"])
+    db.session.add(bankAccount)
+    db.session.commit()
+
+    return redirect(url_for(".accountManagement"))
+
+
+# Form function for the accountManagement page
+# Changes the user's information. Whatever piece of information they choose from the drop down list is what will get
+# changed. User's will enter what they want to change their information to in the first text box of the form and they
+# will confirm that it is them by entering their password into the second.
 @main.route("/changeUserInformation", methods=["GET", "POST"])
 @login_required
 def changeUserInformation():
@@ -316,7 +418,7 @@ def changeUserInformation():
 
     # Make sure all text boxes are actually properly filled out
     if changeTo == "" or password == "":
-        # TODO: add error message
+        flash("You must fill out the required text fields", "editInfoMissingFieldsError")
         return redirect(url_for(".accountManagement"))
 
     # Check if password matches password found in database, then change the requested item
@@ -329,30 +431,21 @@ def changeUserInformation():
             user.username = changeTo
         elif infoToChange == "password":
             user.password = changeTo
+    else:
+        flash("Password incorrect - please try again", "editInfoPasswordError")
+        return redirect(url_for(".accountManagement"))
 
     # Save the change to the database
     db.session.commit()
-    # TODO: add message to let user know change was successful
+    flash("Your information was changed successfully!", "editInfoSuccess")
     return redirect(url_for(".accountManagement"))
 
 
-@main.route("/addFundsToActiveBankAccount", methods=["GET", "POST"])
-@login_required
-def addFundsToActiveBankAccount():
-    # Get active bank account
-    bankAccount = BankAccount.query.filter_by(id=session["active_bank_account_id"]).first()
-
-    # Get the amount to add from the form
-    amountToAdd = request.form.get("add funds")
-
-    # Add money to the bank account amount
-    bankAccount.micro_dollars += float(amountToAdd)
-
-    # Update database
-    db.session.commit()
-
-    # Save the changes to the database
-    return redirect(url_for(".accountManagement"))
+'''
+=======================================
+|           BANK MANAGEMENT           |
+=======================================
+'''
 
 
 #
@@ -363,4 +456,4 @@ def bankManagement():
     # Get current user from database
     user = User.query.filter_by(id=session["user_id"]).first()
 
-    return render_template("bankManagement.html", isBankManager=user.isBankManager)
+    return render_template("bankManagement.html", user=user)

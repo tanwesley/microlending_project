@@ -4,18 +4,20 @@
 <head>
   <meta charset="utf-8">
 
-  <title>Microlending</title>
+  <title>Microlending Dashboard</title>
 
  <link rel="stylesheet" type="text/css" href="{{ url_for('static',filename='styles/poolStyle.css') }}">
 </head>
 
 <body class="root">
-  {% with isBankManager=isBankManager %}
+    <!-- Header declaration -->
+    {% with user=user %}
         {% include 'header.html' %}
     {% endwith %}
 
     <p style="text-align: center;">Welcome, {{user.firstname}}</p>
-
 </body>
-<footer, style="position: absolute; bottom: 0px;">Website by Ryan McDermott, Wesley Tan, Alex Uctum, Kevin Skulski</footer>
+
+<footer style="position: absolute; bottom: 0px;">Website by Ryan McDermott, Wesley Tan, Alex Uctum, Kevin Skulski</footer>
+
 </html>

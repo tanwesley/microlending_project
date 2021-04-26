@@ -1,7 +1,6 @@
 from flask import Flask, session
-import bcrypt
 
-from routes import main
+from routes import main, poolBrowser
 from database import db
 
 

@@ -23,7 +23,7 @@
             <td><a href="{{ url_for('main.accountManagement') }}">Account Management</a></td>
 
             <!-- If the bankManager variable is set to True, then this part of the HTML will be displayed -->
-            {% if isBankManager %}
+            {% if user.isBankManager %}
                 <td><a href="{{ url_for('main.bankManagement') }}">Bank Management</a></td>
             {% endif %}
 

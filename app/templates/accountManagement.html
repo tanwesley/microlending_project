@@ -10,12 +10,13 @@
 </head>
 
 <body class="root">
-    {% with isBankManager=isBankManager %}
+    <!-- Header declaration -->
+    {% with user=user %}
         {% include 'header.html' %}
     {% endwith %}
 
     <!-- Choose active bank account -->
-    <div class="container">
+    <div class="poolContainer">
         <h3>Choose Active Bank Account</h3>
 
         <form action="/switchBankAccounts" method="post">
@@ -26,22 +27,48 @@
                 {% endfor %}
             </select>
 
-            <button class="test" type="submit">submit</button>
+            <button type="submit">submit</button>
         </form>
     </div>
 
     <!-- Add funds to active account -->
-    <div class="container">
+    <div class="poolContainer">
         <h3>Add Funds to Your Account - [{{ bankAccount.account_name }} - ${{ "%.2f" | format(bankAccount.micro_dollars)}}]</h3>
 
         <form action="/addFundsToActiveBankAccount" method="post">
-            <input style="width:50%;" class="poolTextbox" type="text" placeholder="add funds" name="add funds"/>
-            <button class="button" type="submit">submit</button>
+            <input class="poolTextbox" type="text" placeholder="add funds" name="add funds"/>
+            <button type="submit">submit</button>
+            {% with errors = get_flashed_messages(category_filter=["addFundsError"]) %}
+                {% if errors %}
+                    {% for error in errors %}
+                        <br>
+                        <span style="color:red;">{{ error }}</span>
+                    {% endfor %}
+                {% endif %}
+            {% endwith %}
+        </form>
+    </div>
+
+    <!-- Create new bank account section -->
+    <div class="poolContainer">
+        <h3>Create New Bank Account</h3>
+
+        <form action="/createNewBankAccount" method="post">
+            <input class="poolTextbox" type="text" name="account name" placeholder="account name"/>
+            <button type="submit">submit</button>
+            {% with errors = get_flashed_messages(category_filter=["createBankAccountMissingFieldError"]) %}
+                {% if errors %}
+                    {% for error in errors %}
+                        <br>
+                        <span style="color:red;">{{ error }}</span>
+                    {% endfor %}
+                {% endif %}
+            {% endwith %}
         </form>
     </div>
 
     <!-- Change user information section -->
-    <div class="container">
+    <div class="poolContainer">
         <h3>Edit User Information</h3>
 
         <form action="/changeUserInformation" method="post">
@@ -57,20 +84,42 @@
 
             <span>2) Enter what you would like to change it to</span>
             <br><br>
-            <input style="width:50%;" class="poolTextbox" type="text" name="newInformation"/>
+            <input class="poolTextbox" type="text" name="newInformation"/>
             <br>
 
             <span>3) Enter your password and submit</span>
             <br><br>
-            <input style="width:50%;" class="poolTextbox" type="password" name="password"/>
+            <input class="poolTextbox" type="password" name="password"/>
 
-            <button class="userInfoButton" type="submit">submit</button>
-
-            {% if error %}
-                <span style="color: red;">{{ error }}</span>
-            {% endif %}
+            <button type="submit">submit</button>
+            {% with errors = get_flashed_messages(category_filter=["editInfoMissingFieldsError"]) %}
+                {% if errors %}
+                    {% for error in errors %}
+                        <br>
+                        <span style="color:red;">{{ error }}</span>
+                    {% endfor %}
+                {% endif %}
+            {% endwith %}
+            {% with errors = get_flashed_messages(category_filter=["editInfoPasswordError"]) %}
+                {% if errors %}
+                    {% for error in errors %}
+                        <br>
+                        <span style="color:red;">{{ error }}</span>
+                    {% endfor %}
+                {% endif %}
+            {% endwith %}
+            {% with messages = get_flashed_messages(category_filter=["editInfoSuccess"]) %}
+                {% if messages %}
+                    {% for message in messages %}
+                        <br>
+                        <span>{{ message }}</span>
+                    {% endfor %}
+                {% endif %}
+            {% endwith %}
         </form>
     </div>
 </body>
+
 <footer style="position: relative; bottom: 0px;">Website by Ryan McDermott, Wesley Tan, Alex Uctum, Kevin Skulski</footer>
+
 </html>

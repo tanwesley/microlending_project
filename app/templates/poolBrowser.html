@@ -10,14 +10,14 @@
 </head>
 
 <body class="root">
-    {% with isBankManager=isBankManager %}
+    <!-- Header declaration -->
+    {% with user=user %}
         {% include 'header.html' %}
     {% endwith %}
 
+    <!-- Title and category chooser -->
     <div class="poolContainer" style="text-align: center">
-
         <span class="title">Pools</span>
-        <br>
 
         <!-- Pass in a list of all categories found in the Pool table of the database -->
         <form action="{{ url_for('main.poolBrowser') }}" method="post">
@@ -30,37 +30,42 @@
             </select>
             <button class="submitButton" type="submit">go</button>
         </form>
-        <br><br>
+        <br><br><br>
 
-        {% for message in get_flashed_messages() %}
-            <span style="color:red;">{{ message }}</span>
-        {% endfor %}
+        {% with errors = get_flashed_messages() %}
+            {% if errors %}
+                {% for msg in errors %}
+                    <span style="color:red;">{{ msg }}</span>
+                {% endfor %}
+            {% endif %}
+        {% endwith %}
     </div>
 
     <!-- Pass in a list of all pools found in the Pool table of the database -->
     {% for pool in pools %}
-    <div class="poolContainer">
+        <div class="poolContainer">
+            <span class="poolName">{{ pool.name }}</span>
+            <span class="poolCategory">{{ pool.category }}</span>
+            <br>
 
-        <span class="poolName">{{ pool.name }}</span>
-        <span class="poolCategory">{{ pool.category }}</span>
-        <br>
+            <span class="poolAmount">${{ "%.2f" | format(pool.amount) }}</span>
+            <br>
 
-        <span class="poolAmount">${{ "%.2f" | format(pool.amount) }}</span>
-        <br>
+            <form action="/contributeToPool" method="post" class="contribution">
+                <input type="hidden" name="poolId" value={{pool.id}}>
+                <input class="poolTextbox" type="text" placeholder="contribute" name="contribute"/>
+                <button class="poolButton" type="submit">contribute</button>
+            </form>
 
-        <form action="/contributeToPool" method="post" class="contribution">
-            <input type="hidden" name="poolId" value={{pool.id}}>
-            <input class="poolTextbox" type="text" placeholder="contribute" name="contribute"/>
-            <button class="poolButton" type="submit">contribute</button>
-        </form>
-
-        <form action="/requestFromPool" method="post" class="request">
-            <input type="hidden" name="poolId" value={{pool.id}}>
-            <input class="poolTextbox" type="text" placeholder="request" name="request"/>
-            <button class="poolButton" type="submit">request</button>
-        </form>
-    </div>
+            <form action="/requestFromPool" method="post" class="request">
+                <input type="hidden" name="poolId" value={{pool.id}}>
+                <input class="poolTextbox" type="text" placeholder="request" name="request"/>
+                <button class="poolButton" type="submit">request</button>
+            </form>
+        </div>
     {% endfor %}
 </body>
+
 <footer style="position: absolute; bottom: 0px;">Website by Ryan McDermott, Wesley Tan, Alex Uctum, Kevin Skulski</footer>
+
 </html>
