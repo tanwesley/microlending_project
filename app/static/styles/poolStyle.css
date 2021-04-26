@@ -40,13 +40,26 @@ button {
 button:hover {
     background-image: linear-gradient(to right, #3B64FF, #8BA3FF);
 }
-button:active {
-    background-image: linear-gradient(to right, #2855FF, #7C97FF);
-}
 
 .submitButton {
     font-size: 18px;
     width: 50px;
+}
+
+.approveButton {
+    background-image: linear-gradient(to right, #28FF32, #88FF7C);
+    width: 35%;
+}
+.approveButton:hover {
+    background-image: linear-gradient(to right, #3BFF3E, #9BFF8B);
+}
+
+.denyButton {
+    background-image: linear-gradient(to right, #FF2828, #FF7C7C);
+    width: 35%;
+}
+.denyButton:hover {
+    background-image: linear-gradient(to right, #FF3B3B, #FF8B8B);
 }
 
 .poolContainer {

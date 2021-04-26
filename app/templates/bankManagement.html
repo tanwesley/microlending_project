@@ -25,21 +25,39 @@
             <input class="poolTextbox" type="text" placeholder="starting amount" name="starting amount"/>
 
             <button class="userInfoButton" type="submit">submit</button>
+
+            {% with errors = get_flashed_messages(category_filter=["createNewPoolError"]) %}
+                {% if errors %}
+                    {% for error in errors %}
+                        <br>
+                        <span>{{ error }}</span>
+                    {% endfor %}
+                {% endif %}
+            {% endwith %}
         </form>
     </div>
 
     <!-- Approve/deny loan requests -->
     <div class="container">
-        <h3>Review Loan Requests</h3>
-
         {% for loanRequest in loanRequests %}
-            <form action="/approveOrDenyLoanRequest" method="post">
-
+            <form method="post">
+                <h3>Loan Request [ID: {{ loanRequest.id }}]</h3>
+                <hr>
+                <span>{{ loanRequest.requester_name }} requested ${{ "%.2f" | format(loanRequest.amount) }}</span>
+                <br><br>
+                <span>from</span>
+                <br><br>
+                <span>{{ loanRequest.pool_name }} - [${{ "%.2f" | format(loanRequest.pool_amount) }}</span>
+                <br><br>
+                <input type="text" name="interest rate" class="poolTextbox" placeholder="interest rate (defaults to 2%)"/>
+                <button class="approveButton" type="submit" formaction="approveLoanRequest">Approve</button>
+                <button class="denyButton" type="submit" formaction="denyLoanRequest">Deny</button>
             </form>
         {% endfor %}
     </div>
 </body>
 
-<footer style="position: absolute; bottom: 0px;">Website by Ryan McDermott, Wesley Tan, Alex Uctum, Kevin Skulski</footer>
+<br>
+<footer style="text-align:center;">Website by Ryan McDermott, Wesley Tan, Alex Uctum, Kevin Skulski</footer>
 
 </html>

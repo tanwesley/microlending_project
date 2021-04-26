@@ -323,7 +323,8 @@ def requestFromPool():
         return redirect(url_for(".poolBrowser"))
 
     # Create a loan request in the database
-    loanRequest = LoanRequest(amountRequested, user.id, bankAccount.id, pool.id)
+    usersName = user.firstname + " " + user.lastname
+    loanRequest = LoanRequest(amountRequested, user.id, usersName, bankAccount.id, pool.id, pool.name, pool.amount)
     db.session.add(loanRequest)
     db.session.commit()
 
@@ -381,7 +382,7 @@ def addFundsToActiveBankAccount():
 
 
 # Form function for the accountManagement page
-# Creates a new bank account under the user's account
+# - Creates a new bank account under the user's account
 @main.route("/createNewBankAccount", methods=["POST"])
 @login_required
 def createNewBankAccount():
@@ -402,9 +403,9 @@ def createNewBankAccount():
 
 
 # Form function for the accountManagement page
-# Changes the user's information. Whatever piece of information they choose from the drop down list is what will get
-# changed. User's will enter what they want to change their information to in the first text box of the form and they
-# will confirm that it is them by entering their password into the second.
+# - Changes the user's information. Whatever piece of information they choose from the drop down list is what will get
+#   changed. User's will enter what they want to change their information to in the first text box of the form and they
+#   will confirm that it is them by entering their password into the second.
 @main.route("/changeUserInformation", methods=["GET", "POST"])
 @login_required
 def changeUserInformation():
@@ -455,5 +456,42 @@ def changeUserInformation():
 def bankManagement():
     # Get current user from database
     user = User.query.filter_by(id=session["user_id"]).first()
+    # Get loan requests of current user
+    loanRequests = user.loan_requests
 
-    return render_template("bankManagement.html", user=user)
+    return render_template("bankManagement.html", user=user, loanRequests=loanRequests)
+
+
+@main.route("/createNewPool", methods=["POST"])
+@login_required
+@bank_manager_required
+def createNewPool():
+    # Get all required information from the form
+    name = request.form.get("pool name")
+    category = request.form.get("pool category")
+    amount = request.form.get("starting amount")
+
+    # validate that the text boxes were actually filled
+    if name == "" or category == "" or amount == "":
+        flash("You must fill all of the text boxes", "createNewPoolError")
+        return redirect(url_for(".bankManagement"))
+
+    # validate the amount to make sure it's actually a number
+    if not re.match(r'^[1-9]\d*(\.\d{1,2})?$', amount):
+        flash("Please enter a valid number", "createNewPoolError")
+        return redirect(url_for(".bankManagement"))
+
+    # Create the pool model and add it to the database
+    pool = Pool(name, category, amount)
+    db.session.add(pool)
+    db.session.commit()
+
+    return redirect(url_for(".bankManagement"))
+
+
+@main.route("/approveLoanRequest", methods=["POST"])
+@login_required
+@bank_manager_required
+def approveLoanRequest():
+
+    return redirect(url_for(".bankManagement"))

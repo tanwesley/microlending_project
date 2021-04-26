@@ -118,11 +118,17 @@ class LoanRequest(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     amount = db.Column(db.Float)
     user_id = db.Column(db.Integer, db.ForeignKey("user.id"))
+    requester_name = db.Column(db.String(100))
     account_id = db.Column(db.Integer, db.ForeignKey("bank_account.id"))
     pool_id = db.Column(db.Integer, db.ForeignKey("pool.id"))
+    pool_name = db.Column(db.String(100))
+    pool_amount = db.Column(db.Float)
 
-    def __init__(self, amount, user_id, account_id, pool_id):
+    def __init__(self, amount, user_id, requester_name, account_id, pool_id, pool_name, pool_amount):
         self.amount = amount
         self.user_id = user_id
+        self.requester_name = requester_name
         self.account_id = account_id
         self.pool_id = pool_id
+        self.pool_name = pool_name
+        self.pool_amount = pool_amount
