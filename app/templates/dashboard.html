@@ -20,13 +20,30 @@
     <table>
         <tr>
             <th>Pending Loans</th>
-            <th>Approved Loans</th>
         </tr>
             {% for loan_request in user.loan_requests %}
             <tr>
                 <td>{{loan_request.amount}}</td>
             </tr>
             {% endfor %}
+    </table>
+
+    <table colspan>
+        <tr>
+            <th colspan="2">Approved Loans</th>
+        </tr>
+
+        <tr>
+            <th>Amount</th>
+            <th>Date Given</th>
+        </tr>
+        {% for loan in user.loans %}
+        <tr>
+            <td>{{loan.amount}}</td>
+            <td>{{loan.date_given}}</td>
+        </tr>
+        {% endfor %}
+
     </table>
 </body>
 
