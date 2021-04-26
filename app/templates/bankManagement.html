@@ -40,16 +40,16 @@
     <!-- Approve/deny loan requests -->
     <div class="container">
         {% for loanRequest in loanRequests %}
-            <form method="post">
+            <form method="post" style="width: 100%;">
                 <h3>Loan Request [ID: {{ loanRequest.id }}]</h3>
                 <hr>
-                <span>{{ loanRequest.requester_name }} requested ${{ "%.2f" | format(loanRequest.amount) }}</span>
+                <span><strong>{{ loanRequest.requester_name }}</strong> requested <strong>${{ "%.2f" | format(loanRequest.amount) }}</strong></span>
                 <br><br>
                 <span>from</span>
                 <br><br>
-                <span>{{ loanRequest.pool_name }} - [${{ "%.2f" | format(loanRequest.pool_amount) }}</span>
+                <span><strong>{{ loanRequest.pool_name }} - [${{ "%.2f" | format(loanRequest.pool_amount) }}]</strong></span>
                 <br><br>
-                <input type="text" name="interest rate" class="poolTextbox" placeholder="interest rate (defaults to 2%)"/>
+                <input type="text" name="interest rate" class="poolTextbox"  style="width: 30%;" placeholder="interest rate (defaults to 2%)"/>
                 <button class="approveButton" type="submit" formaction="approveLoanRequest">Approve</button>
                 <button class="denyButton" type="submit" formaction="denyLoanRequest">Deny</button>
             </form>
