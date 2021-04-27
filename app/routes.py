@@ -204,7 +204,7 @@ def dashboard():
     # Get the active bank account using the session variable
     bankAccount = BankAccount.query.filter_by(id=session["active_bank_account_id"]).first()
 
-    #get loans and loan requests
+    # get loans and loan requests
     loan_requests = user.loan_requests
     loans = user.loans
 
@@ -529,7 +529,7 @@ def approveLoanRequest():
     loanRequest = LoanRequest.query.filter_by(id=loanRequestId).first()
 
     # Create loan model and add it to the database
-    loan = Loan(loanRequest.amount, interestRate, time.time(), loanRequest.user_id)
+    loan = Loan(loanRequest.amount, interestRate, int(time.time()), loanRequest.user_id)
     db.session.add(loan)
 
     # Delete the loan request from the database
