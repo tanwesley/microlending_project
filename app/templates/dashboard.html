@@ -19,11 +19,12 @@
 
     <table>
         <tr>
-            <th>ACTIVE ACCOUNT: {{bankAccount.account_name}}</th>
+            <th>ACTIVE ACCOUNT: {{bankAccount.account_name}}
+            </th>
         </tr>
 
         <tr>
-            <td>BALANCE: ${{bankAccount.micro_dollars}}</td>
+            <td>BALANCE: ${{ "%.2f" | format(bankAccount.micro_dollars) }}</td>
         </tr>
 
     </table>
@@ -34,7 +35,7 @@
         </tr>
             {% for loan_request in loan_requests %}
             <tr>
-                <td>{{loan_request.amount}}</td>
+                <td>{{ "%.2f" | format(loan_request.amount)}}</td>
             </tr>
             {% endfor %}
     </table>
@@ -50,7 +51,7 @@
         </tr>
         {% for loan in loans %}
         <tr>
-            <td>{{loan.amount}}</td>
+            <td>{{ "%.2f" | format(loan.amount)}}</td>
             <td>{{loan.date_given}}</td>
         </tr>
         {% endfor %}
