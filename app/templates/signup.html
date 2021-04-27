@@ -10,6 +10,10 @@
 </head>
 
 <body class="root">
+    <!-- Header declaration -->
+    {% with user=user %}
+        {% include 'header.html' %}
+    {% endwith %}
     <div class="formContainer">
         <form action="/signup" method="post">
             <label class="titleLabel">sign up</label>
