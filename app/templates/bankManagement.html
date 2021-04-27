@@ -30,7 +30,7 @@
                 {% if errors %}
                     {% for error in errors %}
                         <br>
-                        <span>{{ error }}</span>
+                        <span style="color: red">{{ error }}</span>
                     {% endfor %}
                 {% endif %}
             {% endwith %}
@@ -38,23 +38,34 @@
     </div>
 
     <!-- Approve/deny loan requests -->
-    <div class="container">
-        {% for loanRequest in loanRequests %}
+    {% for loanRequest in loanRequests %}
+        <div class="container">
             <form method="post" style="width: 100%;">
+                <!-- Place needed info in hidden field -->
+                <input type="hidden" name="loanRequestId" value="{{ loanRequest.id }}">
+
                 <h3>Loan Request [ID: {{ loanRequest.id }}]</h3>
                 <hr>
-                <span><strong>{{ loanRequest.requester_name }}</strong> requested <strong>${{ "%.2f" | format(loanRequest.amount) }}</strong></span>
+                <span><strong>{{ loanRequest.requester_name }}</strong> requested <strong>{{ "${:,.2f}".format(loanRequest.amount) }}</strong></span>
                 <br><br>
                 <span>from</span>
                 <br><br>
-                <span><strong>{{ loanRequest.pool_name }} - [${{ "%.2f" | format(loanRequest.pool_amount) }}]</strong></span>
+                <span><strong>{{ loanRequest.pool_name }} - [{{ "${:,.2f}".format(loanRequest.pool_amount) }}]</strong></span>
                 <br><br>
                 <input type="text" name="interest rate" class="poolTextbox"  style="width: 30%;" placeholder="interest rate (defaults to 2%)"/>
                 <button class="approveButton" type="submit" formaction="approveLoanRequest">Approve</button>
                 <button class="denyButton" type="submit" formaction="denyLoanRequest">Deny</button>
+                {% with errors = get_flashed_messages(category_filter=["approveLoanRequestError"]) %}
+                    {% if errors %}
+                        {% for error in errors %}
+                            <br>
+                            <span style="color: red">{{ error }}</span>
+                        {% endfor %}
+                    {% endif %}
+                {% endwith %}
             </form>
-        {% endfor %}
-    </div>
+        </div>
+    {% endfor %}
 </body>
 
 <br>

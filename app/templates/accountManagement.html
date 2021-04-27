@@ -9,21 +9,21 @@
     <link rel="stylesheet" href="{{ url_for('static', filename='styles/poolStyle.css') }}">
 </head>
 
-<body class="root">
+<body>
     <!-- Header declaration -->
     {% with user=user %}
         {% include 'header.html' %}
     {% endwith %}
 
     <!-- Choose active bank account -->
-    <div class="poolContainer">
+    <div>
         <h3>Choose Active Bank Account</h3>
 
-        <form action="/switchBankAccounts" method="post">
-            <select name="accountDropDown" class="categoryList">
-                <option disabled selected value>{{ bankAccount.account_name }} - ${{ "%.2f" | format(bankAccount.micro_dollars) }}</option>
+        <form class="fullWidthForm" action="/switchBankAccounts" method="post">
+            <select class="accountManagementSelect" name="accountDropDown">
+                <option disabled selected value>{{ bankAccount.account_name }} - {{ "${:,.2f}".format(bankAccount.micro_dollars) }}</option>
                 {% for account in user.bank_accounts %}
-                    <option value="{{ account.id }}">{{ account.account_name }} - ${{ "%.2f" | format(account.micro_dollars) }}</option>
+                    <option value="{{ account.id }}">{{ account.account_name }} - {{ "${:,.2f}".format(account.micro_dollars) }}</option>
                 {% endfor %}
             </select>
 
@@ -32,11 +32,11 @@
     </div>
 
     <!-- Add funds to active account -->
-    <div class="poolContainer">
-        <h3>Add Funds to Your Account - [{{ bankAccount.account_name }} - ${{ "%.2f" | format(bankAccount.micro_dollars)}}]</h3>
+    <div>
+        <h3>Add Funds to Your Account - [{{ bankAccount.account_name }} - {{ "${:,.2f}".format(bankAccount.micro_dollars) }}]</h3>
 
-        <form action="/addFundsToActiveBankAccount" method="post">
-            <input class="poolTextbox" type="text" placeholder="add funds" name="add funds"/>
+        <form class="fullWidthForm" action="/addFundsToActiveBankAccount" method="post">
+            <input class="accountManagementInput" type="text" placeholder="add funds" name="add funds"/>
             <button type="submit">submit</button>
             {% with errors = get_flashed_messages(category_filter=["addFundsError"]) %}
                 {% if errors %}
@@ -50,11 +50,11 @@
     </div>
 
     <!-- Create new bank account section -->
-    <div class="poolContainer">
+    <div>
         <h3>Create New Bank Account</h3>
 
-        <form action="/createNewBankAccount" method="post">
-            <input class="poolTextbox" type="text" name="account name" placeholder="account name"/>
+        <form class="fullWidthForm" action="/createNewBankAccount" method="post">
+            <input class="accountManagementInput" type="text" name="account name" placeholder="account name"/>
             <button type="submit">submit</button>
             {% with errors = get_flashed_messages(category_filter=["createBankAccountMissingFieldError"]) %}
                 {% if errors %}
@@ -68,13 +68,13 @@
     </div>
 
     <!-- Change user information section -->
-    <div class="poolContainer">
+    <div>
         <h3>Edit User Information</h3>
 
-        <form action="/changeUserInformation" method="post">
+        <form class="fullWidthForm" action="/changeUserInformation" method="post">
             <span>1) Choose which piece of info you would like to change</span>
             <br><br>
-            <select style="width:250px;" name="infoDropDown" class="categoryList">
+            <select class="accountManagementSelect" name="infoDropDown">
                 <option value="first name">First name</option>
                 <option value="last name">Last name</option>
                 <option value="username">Username</option>
@@ -84,23 +84,15 @@
 
             <span>2) Enter what you would like to change it to</span>
             <br><br>
-            <input class="poolTextbox" type="text" name="newInformation"/>
+            <input class="accountManagementInput" type="text" name="newInformation"/>
             <br>
 
             <span>3) Enter your password and submit</span>
             <br><br>
-            <input class="poolTextbox" type="password" name="password"/>
+            <input class="accountManagementInput" type="password" name="password"/>
 
             <button type="submit">submit</button>
-            {% with errors = get_flashed_messages(category_filter=["editInfoMissingFieldsError"]) %}
-                {% if errors %}
-                    {% for error in errors %}
-                        <br>
-                        <span style="color:red;">{{ error }}</span>
-                    {% endfor %}
-                {% endif %}
-            {% endwith %}
-            {% with errors = get_flashed_messages(category_filter=["editInfoPasswordError"]) %}
+            {% with errors = get_flashed_messages(category_filter=["editInfoError"]) %}
                 {% if errors %}
                     {% for error in errors %}
                         <br>
@@ -121,6 +113,6 @@
 </body>
 
 <br>
-<footer style="text-align:center;">Website by Ryan McDermott, Wesley Tan, Alex Uctum, Kevin Skulski</footer>
+<footer>Website by Ryan McDermott, Wesley Tan, Alex Uctum, Kevin Skulski</footer>
 
 </html>

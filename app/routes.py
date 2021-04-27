@@ -1,7 +1,9 @@
+import time
+
 from flask import Blueprint, request, render_template, url_for, redirect, session, flash
 from functools import wraps
 from database import db
-from models import User, PoolContribution, LoanRequest
+from models import User, PoolContribution, LoanRequest, Loan
 from models import Pool
 from models import BankAccount
 import bcrypt
@@ -249,8 +251,11 @@ def poolBrowser():
                 temp.append(pool)
         pools = temp
 
+    # Get active bank account to display towards the top
+    bankAccount = BankAccount.query.filter_by(id=session["active_bank_account_id"])
+
     return render_template("poolBrowser.html", chosenCategory=chosenCategory, categories=categories,
-                           pools=pools, user=user)
+                           pools=pools, user=user, bankAccount=bankAccount)
 
 
 # Form function for the poolBrowser page
@@ -421,7 +426,7 @@ def changeUserInformation():
 
     # Make sure all text boxes are actually properly filled out
     if changeTo == "" or password == "":
-        flash("You must fill out the required text fields", "editInfoMissingFieldsError")
+        flash("You must fill out the required text fields", "editInfoError")
         return redirect(url_for(".accountManagement"))
 
     # Check if password matches password found in database, then change the requested item
@@ -435,7 +440,7 @@ def changeUserInformation():
         elif infoToChange == "password":
             user.password = changeTo
     else:
-        flash("Password incorrect - please try again", "editInfoPasswordError")
+        flash("Password incorrect - please try again", "editInfoError")
         return redirect(url_for(".accountManagement"))
 
     # Save the change to the database
@@ -495,5 +500,55 @@ def createNewPool():
 @login_required
 @bank_manager_required
 def approveLoanRequest():
+    # Grab the interest rate from the text box. If no interest rate is specified, set it to 2%.
+    interestRate = request.form.get("interest rate")
+
+    if interestRate == "":
+        interestRate = "2"
+
+    # Makes sure whatever was entered by the user is actually a number. If it isn't, an error message will be displayed.
+    if not re.match(r'^[1-9]\d*(\.\d{1,2})?$', interestRate):
+        flash("Please enter a valid number", "approveLoanRequestError")
+        return redirect(url_for(".bankManagement"))
+
+    # Now that we know it is a number, we can covert it to a float
+    interestRate = float(interestRate)
+
+    # Make sure the number entered is between 0-100. If it isn't, an error message will be displayed
+    if interestRate > 100:
+        flash("Please enter a number between 0-100", "approveLoanRequestError")
+        return redirect(url_for(".bankManagement"))
+
+    # Get the loan id from the hidden field in the form and create a loanRequest object with it
+    loanRequestId = request.form.get("loanRequestId")
+    loanRequest = LoanRequest.query.filter_by(id=loanRequestId).first()
+
+    # Create loan model and add it to the database
+    loan = Loan(loanRequest.amount, interestRate, time.time(), loanRequest.user_id)
+    db.session.add(loan)
+
+    # Delete the loan request from the database
+    LoanRequest.query.filter_by(id=loanRequestId).delete()
+
+    # Query the pool taken from and subtract the amount taken from it
+    pool = Pool.query.filter_by(id=loanRequest.pool_id).first()
+    pool.amount -= loanRequest.amount
+
+    # Save the changes to the database
+    db.session.commit()
+
+    return redirect(url_for(".bankManagement"))
+
+
+@main.route("/denyLoanRequest", methods=["POST"])
+@login_required
+@bank_manager_required
+def denyLoanRequest():
+    # Get the loan id from the hidden field in the form and delete loanRequest object with it
+    loanRequestId = request.form.get("loanRequestId")
+    LoanRequest.query.filter_by(id=loanRequestId).delete()
+
+    # Save the changes to the database
+    db.session.commit()
 
     return redirect(url_for(".bankManagement"))

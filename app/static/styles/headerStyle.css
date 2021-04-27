@@ -45,37 +45,3 @@ td {
 td:hover {
     background-image: linear-gradient(to right, #3B64FF, #8BA3FF);
 }
-
-.title {
-    font-size: 60px;
-    display: block;
-    padding-bottom: 20px;
-}
-
-.categoryList {
-    font-size: 18px;
-    background-color: #E1E1E1;
-    height: 50px;
-    border: none;
-    outline: none;
-    padding-left: 10px;
-}
-
-button {
-    font-size: large;
-    height: 50px;
-    border: none;
-    outline: none;
-    background-image: linear-gradient(to right, #2855FF, #7C97FF);
-}
-button:hover {
-    background-image: linear-gradient(to right, #3B64FF, #8BA3FF);
-}
-button:active {
-    background-image: linear-gradient(to right, #2855FF, #7C97FF);
-}
-
-.submitButton {
-    font-size: 18px;
-    width: 50px;
-}

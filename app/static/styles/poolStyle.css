@@ -1,74 +1,77 @@
-.root {
-    font-family: Verdana;
-    background-image: linear-gradient(to right, #2855FF, #7C97FF);
-} 
-
-.title {
-    font-size: 60px;
-    display: block;
-    padding-bottom: 20px;
-}
-
-.center {
-    margin-left: auto;
-    margin-right: auto;
-  }
-
-.categoryList {
-    font-size: 18px;
-    background-color: #E1E1E1;
-    height: 50px;
-    border: none;
-    outline: none;
-    padding-left: 10px;
-}
-
-option {
-    border: 1px solid gray;
-}
-option:nth-child(even) {
-    background-color:white;
-}
-
-button {
-    font-size: large;
-    height: 50px;
-    border: none;
-    outline: none;
+/* General */
+body {
+    font-family: Helvetica;
     background-image: linear-gradient(to right, #2855FF, #7C97FF);
 }
-button:hover {
-    background-image: linear-gradient(to right, #3B64FF, #8BA3FF);
-}
 
-.submitButton {
-    font-size: 18px;
-    width: 50px;
-}
-
-.approveButton {
-    background-image: linear-gradient(to right, #28FF32, #88FF7C);
-    width: 15%;
-}
-.approveButton:hover {
-    background-image: linear-gradient(to right, #3BFF3E, #9BFF8B);
-}
-
-.denyButton {
-    background-image: linear-gradient(to right, #FF2828, #FF7C7C);
-    width: 15%;
-}
-.denyButton:hover {
-    background-image: linear-gradient(to right, #FF3B3B, #FF8B8B);
-}
-
-.poolContainer {
+div {
     width: 50%;
     background-color: #F9F9F9;
     margin: 10px auto auto auto;
     padding: 10px 10px 10px 10px;
     box-shadow: 3px 3px 3px #3E3E3E;
     border-radius: 10px;
+}
+
+button {
+    font-size: large;
+    height: 50px;
+    width: 100px;
+    border: 1px solid black;
+    outline: none;
+    background: #0B1E53;
+    color: white;
+    border-radius: 10px;
+}
+button:hover {
+    background: #253152;
+}
+
+input {
+    outline: none;
+    height: 50px;
+    background-color: #E1E1E1;
+    border: none;
+    margin-bottom: 10px;
+    padding-left: 10px;
+    font-size: 18px;
+    border-radius: 10px;
+}
+
+select {
+    font-size: 18px;
+    background-color: #E1E1E1;
+    height: 50px;
+    border: none;
+    outline: none;
+    padding-left: 10px;
+    border-radius: 10px;
+}
+option:nth-child(even) {
+    background-color: white;
+}
+
+form {
+    display: inline-block;
+}
+
+footer {
+    text-align: center;
+}
+
+.fullWidthForm {
+    width: 100%;
+}
+
+/* poolBrowser.html */
+.titleDiv {
+    text-align: center;
+}
+
+.title {
+    font-size: 60px;
+    display: block;
+    padding-bottom: 20px;
 }
 
 .poolName {
@@ -90,23 +93,40 @@ button:hover {
     padding: 50px 0px 50px 0px;
 }
 
-.poolTextbox {
-    outline: none;
-    height: 50px;
-    background-color: #E1E1E1;
-    border: none;
-    margin-bottom: 10px;
-    padding-left: 10px;
+/* accountManagement.html */
+.accountManagementInput {
+    width: 30%;
+}
+
+.accountManagementSelect {
+    width: 31.5%;
+}
+
+
+.submitButton {
     font-size: 18px;
+    width: 50px;
 }
 
-.poolButton {
-    width: 100px;
+.approveButton {
+    background: #0B530D;
+    width: 15%;
+}
+.approveButton:hover {
+    background: #255225;
 }
 
-form {
-    display: inline-block;
+.denyButton {
+    background: #530B0B;
+    width: 15%;
 }
+.denyButton:hover {
+    background: #522525;
+}
+
+
+
+
 .contribute {
     padding-left: 10px;
     width: auto;
@@ -116,3 +136,4 @@ form {
     width: auto;
     float: right;
 }
+
