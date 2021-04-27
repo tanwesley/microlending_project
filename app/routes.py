@@ -199,9 +199,14 @@ def dashboard():
     # Get current user from database
     user = User.query.filter_by(id=session["user_id"]).first()
 
-    loan_requests = user.loan_requests
+    # Get the active bank account using the session variable
+    bankAccount = BankAccount.query.filter_by(id=session["active_bank_account_id"]).first()
 
-    return render_template("dashboard.html", user=user, loan_requests=loan_requests)
+    #get loans and loan requests
+    loan_requests = user.loan_requests
+    loans = user.loans
+
+    return render_template("dashboard.html", user=user, loan_requests=loan_requests,loans=loans,bankAccount=bankAccount)
 
 
 '''

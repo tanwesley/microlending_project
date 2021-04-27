@@ -19,16 +19,27 @@
 
     <table>
         <tr>
+            <th>ACTIVE ACCOUNT: {{bankAccount.account_name}}</th>
+        </tr>
+
+        <tr>
+            <td>BALANCE: ${{bankAccount.micro_dollars}}</td>
+        </tr>
+
+    </table>
+
+    <table>
+        <tr>
             <th>Pending Loans</th>
         </tr>
-            {% for loan_request in user.loan_requests %}
+            {% for loan_request in loan_requests %}
             <tr>
                 <td>{{loan_request.amount}}</td>
             </tr>
             {% endfor %}
     </table>
 
-    <table colspan>
+    <table>
         <tr>
             <th colspan="2">Approved Loans</th>
         </tr>
@@ -37,7 +48,7 @@
             <th>Amount</th>
             <th>Date Given</th>
         </tr>
-        {% for loan in user.loans %}
+        {% for loan in loans %}
         <tr>
             <td>{{loan.amount}}</td>
             <td>{{loan.date_given}}</td>
