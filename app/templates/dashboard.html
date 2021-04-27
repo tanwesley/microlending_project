@@ -19,12 +19,12 @@
 
     <table>
         <tr>
-            <th>ACTIVE ACCOUNT: {{bankAccount.account_name}}
+            <th>ACTIVE ACCOUNT: {{ bankAccount.account_name }}
             </th>
         </tr>
 
         <tr>
-            <td>BALANCE: ${{ "%.2f" | format(bankAccount.micro_dollars) }}</td>
+            <td>BALANCE: {{ "${:,.2f}".format(bankAccount.micro_dollars) }}</td>
         </tr>
 
     </table>
@@ -35,7 +35,7 @@
         </tr>
             {% for loan_request in loan_requests %}
             <tr>
-                <td>{{ "%.2f" | format(loan_request.amount)}}</td>
+                <td>{{ "${:,.2f}".format(loan_request.amount)}}</td>
             </tr>
             {% endfor %}
     </table>
@@ -46,13 +46,13 @@
         </tr>
 
         <tr>
-            <th>Amount</th>
+            <th>Amount Loaned</th>
             <th>Date Given</th>
         </tr>
         {% for loan in loans %}
         <tr>
-            <td>{{ "%.2f" | format(loan.amount)}}</td>
-            <td>{{loan.date_given}}</td>
+            <td>{{ "${:,.2f}".format(loan.amount) }}</td>
+            <td>{{ loan.format_date_given }}</td>
         </tr>
         {% endfor %}
 
@@ -60,6 +60,6 @@
 </body>
 
 <br>
-<footer style="text-align:center;">Website by Ryan McDermott, Wesley Tan, Alex Uctum, Kevin Skulski</footer>
+<footer>Website by Ryan McDermott, Wesley Tan, Alex Uctum, Kevin Skulski</footer>
 
 </html>

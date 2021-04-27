@@ -1,7 +1,9 @@
+import datetime
 import time
 
 from flask import Blueprint, request, render_template, url_for, redirect, session, flash
 from functools import wraps
+
 from database import db
 from models import User, PoolContribution, LoanRequest, Loan
 from models import Pool
@@ -208,7 +210,11 @@ def dashboard():
     loan_requests = user.loan_requests
     loans = user.loans
 
-    return render_template("dashboard.html", user=user, loan_requests=loan_requests,loans=loans,bankAccount=bankAccount)
+    for loan in loans:
+        # Format the date before starting the page
+        loan.format_date_given = datetime.datetime.fromtimestamp(loan.date_given).strftime('%m/%d/%Y')
+
+    return render_template("dashboard.html", user=user, loan_requests=loan_requests, loans=loans, bankAccount=bankAccount)
 
 
 '''
