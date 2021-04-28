@@ -196,7 +196,7 @@ def signup():
 '''
 
 
-#
+# Retrieves a user's information to render their account's dashboard
 @main.route("/dashboard", methods=["GET", "POST"])
 @login_required
 def dashboard():
