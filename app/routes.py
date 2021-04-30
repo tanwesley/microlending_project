@@ -474,8 +474,8 @@ def changeUserInformation():
 def bankManagement():
     # Get current user from database
     user = User.query.filter_by(id=session["user_id"]).first()
-    # Get loan requests of current user
-    loanRequests = user.loan_requests
+    # Get all loan requests
+    loanRequests = LoanRequest.query.all()
 
     return render_template("bankManagement.html", user=user, loanRequests=loanRequests)
 

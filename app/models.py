@@ -1,3 +1,5 @@
+import datetime
+
 from sqlalchemy.orm import relationship
 from database import db
 
@@ -108,6 +110,7 @@ class Loan(db.Model):
         self.amount = amount
         self.interest_rate = interest_rate
         self.date_given = date_given
+        self.formatted_date_given = ""
         self.user_id = user_id
 
 

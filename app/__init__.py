@@ -12,7 +12,7 @@ def create_app():
     app.register_blueprint(main)
 
     # Configuration settings
-    app.config["SECRET_KEY"] = "microlend2021"  # ?
+    app.config["SECRET_KEY"] = "microlend2021"
     app.config["SQLALCHEMY_DATABASE_URI"] = "sqlite:///db.sqlite3"  # Sets the name and location of the sqlite3 database
     app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False  # Turns off unnecessary warning message
 
